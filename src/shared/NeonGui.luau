@@ -1,95 +1,134 @@
-local C = require(script.Parent.NeonConfig)
-local G = {}
+-- NeonGui: the shared neon look. Every screen the client builds goes
+-- through these helpers so the palette, corners, glow and text size stay
+-- identical across the start screen, the HUD, the pause and the end screen.
+
+local NeonConfig = require(script.Parent.NeonConfig)
+
+local NeonGui = {}
+
 local FONT_TITLE = Enum.Font.Arcade
 local FONT_BODY = Enum.Font.GothamBold
-function G.newFrame(name: string, parent: Instance): Frame
-	local f = Instance.new("Frame")
-	f.Name = name
-	f.BackgroundColor3 = C.Palette.Arena
-	f.BackgroundTransparency = 0.15
-	f.BorderSizePixel = 0
-	f.Parent = parent
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 12)
-	c.Parent = f
-	local s = Instance.new("UIStroke")
-	s.Color = C.Palette.Cyan
-	s.Thickness = 2
-	s.Transparency = 0.35
-	s.Parent = f
-	return f
+
+-- A plain full-bleed frame with no corner and no outline (backgrounds).
+function NeonGui.newPlainFrame(name: string, parent: Instance): Frame
+	local frame = Instance.new("Frame")
+	frame.Name = name
+	frame.BackgroundColor3 = NeonConfig.Palette.Background
+	frame.BorderSizePixel = 0
+	frame.Parent = parent
+	return frame
 end
-function G.newLabel(name: string, parent: Instance, text: string, textSize: number, color: Color3, font: Enum.Font?): TextLabel
-	local l = Instance.new("TextLabel")
-	l.Name = name
-	l.BackgroundTransparency = 1
-	l.Text = text
-	l.TextSize = textSize
-	l.TextColor3 = color
-	l.Font = font or FONT_BODY
-	l.TextWrapped = true
-	l.Parent = parent
-	return l
+
+function NeonGui.newFrame(name: string, parent: Instance): Frame
+	local frame = Instance.new("Frame")
+	frame.Name = name
+	frame.BackgroundColor3 = NeonConfig.Palette.Arena
+	frame.BackgroundTransparency = 0.15
+	frame.BorderSizePixel = 0
+	frame.Parent = parent
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 12)
+	corner.Parent = frame
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = NeonConfig.Palette.Cyan
+	stroke.Thickness = 2
+	stroke.Transparency = 0.35
+	stroke.Parent = frame
+	return frame
 end
-function G.newTitleLabel(name: string, parent: Instance, text: string, textSize: number): TextLabel
-	local l = G.newLabel(name, parent, text, textSize, C.Palette.Cyan, FONT_TITLE)
-	local s = Instance.new("UIStroke")
-	s.Color = C.Palette.Magenta
-	s.Thickness = 1
-	s.Transparency = 0.4
-	s.Parent = l
-	return l
+
+function NeonGui.newLabel(
+	name: string,
+	parent: Instance,
+	text: string,
+	textSize: number,
+	color: Color3,
+	font: Enum.Font?
+): TextLabel
+	local label = Instance.new("TextLabel")
+	label.Name = name
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextSize = textSize
+	label.TextColor3 = color
+	label.Font = font or FONT_BODY
+	label.TextWrapped = true
+	label.Parent = parent
+	return label
 end
-function G.newButton(name: string, parent: Instance, text: string, fillColor: Color3, textSize: number?): TextButton
-	local b = Instance.new("TextButton")
-	b.Name = name
-	b.BackgroundColor3 = fillColor
-	b.BorderSizePixel = 0
-	b.Text = text
-	b.TextSize = textSize or 30
-	b.TextColor3 = C.Palette.Background
-	b.Font = FONT_TITLE
-	b.AutoButtonColor = true
-	b.Parent = parent
-	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, 10)
-	c.Parent = b
-	local s = Instance.new("UIStroke")
-	s.Color = C.Palette.White
-	s.Thickness = 2
-	s.Transparency = 0.2
-	s.Parent = b
-	return b
+
+function NeonGui.newTitleLabel(name: string, parent: Instance, text: string, textSize: number): TextLabel
+	local label = NeonGui.newLabel(name, parent, text, textSize, NeonConfig.Palette.Cyan, FONT_TITLE)
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = NeonConfig.Palette.Magenta
+	stroke.Thickness = 1
+	stroke.Transparency = 0.4
+	stroke.Parent = label
+	return label
 end
-function G.newDimLayer(name: string, parent: Instance): Frame
-	local d = Instance.new("Frame")
-	d.Name = name
-	d.Size = UDim2.fromScale(1, 1)
-	d.BackgroundColor3 = C.Palette.Background
-	d.BackgroundTransparency = 0.45
-	d.BorderSizePixel = 0
-	d.Parent = parent
-	return d
+
+-- A glowing neon button: bright fill, thick outline, big readable text.
+function NeonGui.newButton(
+	name: string,
+	parent: Instance,
+	text: string,
+	fillColor: Color3,
+	textSize: number?
+): TextButton
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.BackgroundColor3 = fillColor
+	button.BorderSizePixel = 0
+	button.Text = text
+	button.TextSize = textSize or 30
+	button.TextColor3 = NeonConfig.Palette.Background
+	button.Font = FONT_TITLE
+	button.AutoButtonColor = true
+	button.Parent = parent
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = button
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = NeonConfig.Palette.White
+	stroke.Thickness = 2
+	stroke.Transparency = 0.2
+	stroke.Parent = button
+	return button
 end
-function G.newBar(name: string, parent: Instance, fillColor: Color3): (Frame, Frame)
+
+-- A full-screen dim layer behind a menu so the arena stays visible.
+function NeonGui.newDimLayer(name: string, parent: Instance): Frame
+	local dim = Instance.new("Frame")
+	dim.Name = name
+	dim.Size = UDim2.fromScale(1, 1)
+	dim.BackgroundColor3 = NeonConfig.Palette.Background
+	dim.BackgroundTransparency = 0.45
+	dim.BorderSizePixel = 0
+	dim.Parent = parent
+	return dim
+end
+
+-- A thin neon bar (health, boss health, combo timer).
+function NeonGui.newBar(name: string, parent: Instance, fillColor: Color3): (Frame, Frame)
 	local back = Instance.new("Frame")
 	back.Name = name .. "Back"
-	back.BackgroundColor3 = C.Palette.Background
+	back.BackgroundColor3 = NeonConfig.Palette.Background
 	back.BackgroundTransparency = 0.25
 	back.BorderSizePixel = 0
 	back.Parent = parent
-	local bc = Instance.new("UICorner")
-	bc.CornerRadius = UDim.new(0, 6)
-	bc.Parent = back
+	local backCorner = Instance.new("UICorner")
+	backCorner.CornerRadius = UDim.new(0, 6)
+	backCorner.Parent = back
 	local fill = Instance.new("Frame")
 	fill.Name = name .. "Fill"
 	fill.Size = UDim2.fromScale(1, 1)
 	fill.BackgroundColor3 = fillColor
 	fill.BorderSizePixel = 0
 	fill.Parent = back
-	local fc = Instance.new("UICorner")
-	fc.CornerRadius = UDim.new(0, 6)
-	fc.Parent = fill
+	local fillCorner = Instance.new("UICorner")
+	fillCorner.CornerRadius = UDim.new(0, 6)
+	fillCorner.Parent = fill
 	return back, fill
 end
-return G
+
+return NeonGui

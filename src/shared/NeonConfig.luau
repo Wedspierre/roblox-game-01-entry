@@ -80,8 +80,10 @@ NeonConfig.BulletRadius = 1
 -- Networking. The client sends its move direction this often at most.
 NeonConfig.MoveSendInterval = 1 / 15
 
--- Camera. Fixed angled top-down view of the whole arena.
-NeonConfig.CameraPosition = Vector3.new(0, 88, 62)
-NeonConfig.CameraLookAt = Vector3.new(0, 0, -4)
+-- Camera. Fixed angled top-down view of the whole arena. Steep enough
+-- that the arena fills the screen (little sky visible) and the neon
+-- grid reads as a playfield, not a distant slab.
+NeonConfig.CameraPosition = Vector3.new(0, 112, 34)
+NeonConfig.CameraLookAt = Vector3.new(0, 0, 0)
 
 return NeonConfig

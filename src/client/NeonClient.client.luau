@@ -75,7 +75,11 @@ local function buildGui()
 
 	local background = NeonGui.newPlainFrame("Background", gui)
 	background.Size = UDim2.fromScale(1, 1)
-	background.BackgroundTransparency = 0
+	-- MUST stay fully transparent: this frame sits above the 3D viewport,
+	-- and an opaque one hides the whole arena (ship, enemies, neon grid)
+	-- behind a flat dark panel. The menus dim the arena with their own
+	-- StartDim/PauseDim/EndDim layers instead.
+	background.BackgroundTransparency = 1
 
 	-- Dim vignette frame the arena overlay sits on (purely cosmetic).
 	arenaOverlay = Instance.new("Frame")
